@@ -1,5 +1,6 @@
 import { setFailed } from '@actions/core'
 import { mkdirP, mv, cp } from '@actions/io'
+import { exists } from '@actions/io/lib/io-util'
 import { spawn } from 'child_process'
 import { promisify } from 'util'
 
@@ -12,6 +13,11 @@ const rsync = promisify(spawn)
 async function post(): Promise<void> {
   try {
     const { cacheDir, targetPath, cachePath, options } = getVars()
+
+    if (options.cacheOnce && (await exists(cacheDir))) {
+      log.info(`Skipping cache for already existing cache (cache-once=true)`)
+      return
+    }
 
     await mkdirP(cacheDir)
     if (options.copyStrategy === 'move') {

@@ -2091,7 +2091,7 @@ var require_core = __commonJS({
       return inputs.map((input) => input.trim());
     }
     exports.getMultilineInput = getMultilineInput;
-    function getBooleanInput(name, options) {
+    function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
       const val = getInput2(name, options);
@@ -2102,7 +2102,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports.getBooleanInput = getBooleanInput;
+    exports.getBooleanInput = getBooleanInput2;
     function setOutput2(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
@@ -2881,7 +2881,8 @@ var getVars = () => {
   const options = {
     key: core.getInput("key") || "no-key",
     path: core.getInput("path"),
-    copyStrategy: core.getInput("copy-strategy")
+    copyStrategy: core.getInput("copy-strategy"),
+    cacheOnce: core.getBooleanInput("cache-once")
   };
   if (!options.path) {
     throw new TypeError("path is required but was not provided.");

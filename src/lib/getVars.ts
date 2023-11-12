@@ -12,6 +12,7 @@ type Vars = {
     key: string
     path: string,
     copyStrategy: string,
+    cacheOnce: boolean,
   }
   targetDir: string
   targetPath: string
@@ -29,7 +30,8 @@ export const getVars = (): Vars => {
   const options = {
     key: core.getInput('key') || 'no-key',
     path: core.getInput('path'),
-    copyStrategy: core.getInput('copy-strategy') 
+    copyStrategy: core.getInput('copy-strategy'),
+    cacheOnce: core.getBooleanInput('cache-once'),
   }
 
   if (!options.path) {

@@ -2091,7 +2091,7 @@ var require_core = __commonJS({
       return inputs.map((input) => input.trim());
     }
     exports.getMultilineInput = getMultilineInput;
-    function getBooleanInput(name, options) {
+    function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
       const val = getInput2(name, options);
@@ -2102,7 +2102,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports.getBooleanInput = getBooleanInput;
+    exports.getBooleanInput = getBooleanInput2;
     function setOutput(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
@@ -2272,7 +2272,7 @@ var require_io_util = __commonJS({
     exports.IS_WINDOWS = process.platform === "win32";
     exports.UV_FS_O_EXLOCK = 268435456;
     exports.READONLY = fs.constants.O_RDONLY;
-    function exists(fsPath) {
+    function exists2(fsPath) {
       return __awaiter(this, void 0, void 0, function* () {
         try {
           yield exports.stat(fsPath);
@@ -2285,7 +2285,7 @@ var require_io_util = __commonJS({
         return true;
       });
     }
-    exports.exists = exists;
+    exports.exists = exists2;
     function isDirectory(fsPath, useStat = false) {
       return __awaiter(this, void 0, void 0, function* () {
         const stats = useStat ? yield exports.stat(fsPath) : yield exports.lstat(fsPath);
@@ -2865,6 +2865,7 @@ var require_loglevel = __commonJS({
 // src/post.ts
 var import_core = __toESM(require_core());
 var import_io = __toESM(require_io());
+var import_io_util = __toESM(require_io_util());
 
 // src/lib/getVars.ts
 var core = __toESM(require_core());
@@ -2880,7 +2881,8 @@ var getVars = () => {
   const options = {
     key: core.getInput("key") || "no-key",
     path: core.getInput("path"),
-    copyStrategy: core.getInput("copy-strategy")
+    copyStrategy: core.getInput("copy-strategy"),
+    cacheOnce: core.getBooleanInput("cache-once")
   };
   if (!options.path) {
     throw new TypeError("path is required but was not provided.");
@@ -2923,6 +2925,10 @@ var rsync = util.promisify(child_process.spawn);
 async function post() {
   try {
     const { cacheDir, targetPath, cachePath, options } = getVars();
+    if (options.cacheOnce && await (0, import_io_util.exists)(cacheDir)) {
+      log_default.info(`Skipping cache for already existing cache (cache-once=true)`);
+      return;
+    }
     await (0, import_io.mkdirP)(cacheDir);
     if (options.copyStrategy === "move") {
       await (0, import_io.mv)(targetPath, cachePath, { force: true });
