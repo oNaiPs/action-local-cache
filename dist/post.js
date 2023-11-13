@@ -2925,7 +2925,10 @@ var rsync = util.promisify(child_process.spawn);
 async function post() {
   try {
     const { cacheDir, targetPath, cachePath, options } = getVars();
-    if (options.cacheOnce && await (0, import_io_util.exists)(cacheDir)) {
+    if (!await (0, import_io_util.exists)(targetPath)) {
+      log_default.info(`Skipping cache target folder does not exist`);
+      return;
+    } else if (options.cacheOnce && await (0, import_io_util.exists)(cacheDir)) {
       log_default.info(`Skipping cache for already existing cache (cache-once=true)`);
       return;
     }

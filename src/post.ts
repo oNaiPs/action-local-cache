@@ -14,7 +14,7 @@ async function post(): Promise<void> {
   try {
     const { cacheDir, targetPath, cachePath, options } = getVars()
 
-    if (! await exists(targetPath)) {
+    if (!(await exists(targetPath))) {
       log.info(`Skipping cache target folder does not exist`)
       return
     } else if (options.cacheOnce && (await exists(cacheDir))) {
